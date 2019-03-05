@@ -30,11 +30,14 @@ ylab_line <- 2
 # axis label size
 axis_size <- 0.8
 
+# size of numeric labels
+number_size <- 1.2
+
 # device
 png('cloglog_fig_1.png',
     width = 6000,
     height = 2000,
-    pointsize = 80)
+    pointsize = 90)
 
 par(mfrow = c(1, 3),
     mar = c(5, 6, 4, 2),
@@ -82,9 +85,10 @@ text(x = 8,
 
 # label the probability of absence
 p_abs <- exp(-2)
-text(x = bp[1],
-     y = p_abs + 0.01,
+text(x = bp[1] - 0.1,
+     y = p_abs + 0.02,
      label = round(p_abs, 2),
+     cex = number_size,
      col = col_pres)
 
 # label axes etc
@@ -178,8 +182,9 @@ lines(x = c(-1, 2),
       col = line_col)
 
 text(x = 0.8,
-     y = prob + 0.03,
+     y = prob + 0.04,
      label = round(prob, 2),
+     cex = number_size,
      col = col_pres)
 
 # the main line
@@ -219,8 +224,9 @@ lines(x = c(-5, log(2)),
       col = line_col)
 
 text(x = -1.2,
-     y = prob + 0.03,
+     y = prob + 0.04,
      label = round(prob, 2),
+     cex = number_size,
      col = col_pres)
 
 
@@ -240,7 +246,7 @@ lines(cloglog(eta) ~ eta,
       col = col_pres)
 
 # label axes etc
-title(xlab = expression(eta),
+title(xlab = expression(eta == ln(lambda)),
       cex.lab = axis_size * 1.5,
       col.lab = lab_col,
       line = 3)
