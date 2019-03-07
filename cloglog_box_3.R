@@ -1,4 +1,4 @@
-# plotting figure 2 (example) for the cloglog paper
+# plotting figure 4 (example) for the cloglog paper
 
 # clear workspace
 rm(list = ls())
@@ -30,8 +30,7 @@ line_col <- grey(0.7)
 # Start off using these data:
 # http://datadryad.org/resource/doi:10.5061/dryad.v4p20
 f <- 'http://datadryad.org/bitstream/handle/10255/dryad.63778/Banff_2012.csv'
-df <- read.csv(f,
-               stringsAsFactors = FALSE)
+df <- read.csv(f, stringsAsFactors = FALSE)
 
 # define CRS's (UTM NAD zone 11 & wgs84)
 nad11 <- CRS('+proj=utm +zone=11 +ellps=GRS80 +datum=NAD83 +units=m +no_defs')
@@ -48,7 +47,7 @@ df <- df[!(df$segment %in% drop_segments), ]
 
 # find the number of visits per segment & whether lynx ever seen
 df_sub <- data.frame(visits = tapply(df$segment, df$segment, length),
-                     ever_seen = tapply(df$y.seg, df$segment, first),
+                     detected = tapply(df$y.seg, df$segment, first),
                      coord_x = tapply(df$x.centre, df$segment, first),
                      coord_y = tapply(df$y.centre, df$segment, first))
 
@@ -74,8 +73,8 @@ tmp <- get_map(location = crop_extent[c(1, 3, 2, 4)],
 o <- order(df_sub$visits, decreasing = TRUE)
 df_sub <- df_sub[o, ]
 
-png('~/temp/cloglog_box_3.png',
-    width = 3000,
+png('cloglog_box_3.png',
+    width = 3500,
     height = 3000,
     pointsize = 80)
 
@@ -125,26 +124,81 @@ rect(xleft = 0,
      ybottom = 0,
      xright = ncol(tmp),
      ytop = nrow(tmp),
-     col = rgb(0.95, 0.95, 0.95, 0.7),
+     col = rgb(0.95, 0.95, 0.95, 0.8),
      border = line_col,
      xpd = NA)
 
 points(x = rescale(df_sub$coord_x, ncol(tmp), crop_extent[1:2]),
        y = rescale(df_sub$coord_y, nrow(tmp), crop_extent[3:4]),
        pch = 21,
-       bg = ifelse(df_sub$ever_seen, col_pres, col_abs),
+       bg = ifelse(df_sub$detected, col_pres, col_abs),
        col = grey(0.4),
        lwd = 3,
        cex = log1p(df_sub$visits) * 1)
 
+text(1230, 930,
+     label = "Canadian lynx\nsurvey transects",
+     cex = 1.2)
+
+# presence-absence legend
+legend(1050, 800,
+       legend=c("detected","not detected"),
+       pt.cex = 2,
+       text.col = axis_col,
+       y.intersp = 1.5,
+       lty = NA,
+       pch = 21,
+       pt.bg = c(col_pres, col_abs),
+       col = grey(0.4),
+       lwd = 2,
+       bty = "n") 
+
+# number of visits legend
+legend(1050, 550,
+       legend = c("14 visits", "5 visits", "1 visit"),
+       pt.cex = log1p(c(14, 5, 1)) * 1,
+       text.col = axis_col,
+       y.intersp = 1.5,
+       lty = NA,
+       pch = 21,
+       pt.bg = col_abs,
+       col = grey(0.4),
+       lwd = 2,
+       bty = "n") 
 
 dev.off()
 
-m <- glm(ever_seen ~ 1 + offset(log(df_sub$visits)),
-         data = df_sub,
+# fit a glm
+detected <- df_sub$detected
+visits <- df_sub$visits
+
+# an intercept-only model to estimate the probability of detection (in a single visit) 
+m <- glm(detected ~ 1 + offset(log(visits)),
          family = binomial('cloglog'))
 
-# get the expected number of lynx per 1km per visit
-exp(m$coefficients)
+# the coefficients could be interpreted as the expected number of lynx signs per
+# 1km per visit (though see caveats on estimating density from this type of data
+# in main text)
+intercept <- m$coefficients
+exp(intercept)
 
+# estimate the probability of a detection under 1, 5 or 14 visits:
+predict(m, type = "response",
+        newdata = list(visits = c(1, 5, 14)))
+
+# predict abundance under the same numbers of visits
+log_abund <- predict(m, type = "link",
+                     newdata = list(visits = c(1, 5, 14)))
+exp(log_abund)
+
+# the (inverse) complementary log-log link as an R function
+icloglog <- function (x) 1 - exp(-exp(x))
+# alternatively:
+# icloglog <- binomial('cloglog')$linkinv
+
+# the probability of a detection in a single visit
+icloglog(intercept)
+""
+# and over 14 visits
+icloglog(intercept + log(14))
 
