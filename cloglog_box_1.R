@@ -13,7 +13,8 @@ col_abs <- paired[1]
 col_pres <- paired[2]
 line_col <- grey(0.7)
 lab_col <- grey(0.5)
-link_col <- grey(0.85)
+logit_col <- grey(0.85)
+probit_col <- grey(0.7)
 axis_col <- grey(0.4)
 
 
@@ -68,7 +69,7 @@ xlim <- c(-1.4, -0.2)
 ylim <- c(1, 4.5)
 
 # point & line sizes
-cex <- 0.5
+cex <- 0.8
 lw1 <- 5
 
 plot(t(cloglog_coefs),
@@ -110,12 +111,12 @@ lines(x = xlim + c(-10, 0),
 points(t(logit_coefs),
        pch = 16,
        cex = cex,
-       col = link_col)
+       col = logit_col)
 
 points(t(probit_coefs),
-       pch = 17,
+       pch = 16,
        cex = cex,
-       col = link_col)
+       col = probit_col)
 
 points(t(cloglog_coefs),
      pch = 21,
