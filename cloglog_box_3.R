@@ -66,7 +66,7 @@ crop_extent <- crop_extent + diffs
 crop_extent <- round(crop_extent, 1)
 
 tmp <- get_map(location = crop_extent[c(1, 3, 2, 4)],
-               maptype = 'toner-lite',
+               maptype = 'terrain',
                source = 'stamen')
 
 # reorder to put smallest on top
@@ -78,7 +78,7 @@ png('cloglog_box_3.png',
     height = 3000,
     pointsize = 80)
 
-par(mar = c(4, 4, 2, 2) + 0.1,
+par(mar = c(4, 4, 2, 2 + 6) + 0.1,
     xpd = NA)
 
 # set colour to reflect sampling effort
