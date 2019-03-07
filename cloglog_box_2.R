@@ -74,6 +74,9 @@ axis_col <- grey(0.4)
 lab_col <- grey(0.5)
 line_col <- grey(0.7)
 
+# location of panel letter
+panel_adj <- 0
+
 # axis label size
 axis_size <- 0.8
 
@@ -127,14 +130,23 @@ for (m in 1:3) {
           line = 2)
   }
   
-  # panel labels (model names)
+  # panel titles (model names)
   mtext(models_title[m],
         side = 3,
         line = 1.2,
         cex = 1.2,
         col = panel_col)
   
-  for (a in 1:3) {
+  # panel labels (letters)
+  mtext(LETTERS[m],
+        side = 3,
+        cex = 1.5,
+        adj = panel_adj,
+        line = 1.5,
+        col = panel_col)
+  
+  
+  for (a in 3:1) {
     
     # 1000 random draws of the coefficients, fitted to a 1000-observation dataset
     est <- t(replicate(1000, fit_model(models[m], A = areas[a])))
