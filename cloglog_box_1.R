@@ -21,7 +21,7 @@ axis_col <- grey(0.4)
 # generate fake abundance data
 n <- 1000
 coef <- c(-1, 2)
-df <- data.frame(x = runif(n))
+df <- data.frame(x = rnorm(n))
 eta <- coef[1] + coef[2] * df$x
 lambda <- exp(eta)
 
@@ -65,8 +65,8 @@ png('cloglog_box_1.png',
 
 par(mfrow = c(5, 5, 1, 1))
 
-xlim <- c(-1.4, -0.2)
-ylim <- c(1, 4.5)
+xlim <- c(-1.4, 0)
+ylim <- c(1, 3.5)
 
 # point & line sizes
 cex <- 0.8
